@@ -2,7 +2,6 @@ package me.grovre;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,18 +10,20 @@ import java.util.stream.IntStream;
 
 public class Keyboard {
 
-    private final ChromeDriver driver;
-    private final HashMap<String, WebElement> letterElements = new HashMap<>(26);
+    private final HashMap<String, WebElement> letterElements;
+    private final WebElement enterKey;
+    private WebElement backspaceKey;
 
-    public Keyboard(ChromeDriver driver) {
-        this.driver = driver;
-        System.out.println("Found all usable letters: ");
+    public Keyboard() {
+        this.letterElements = new HashMap<>(26);
+        System.out.println("All found usable letters: ");
         System.out.println(this.verifyKeys());
         System.out.println(this.letterElements);
+        this.enterKey = Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[3]/div/div[3]/button[9]/div"));
     }
 
     public boolean verifyKeys() {
-        List<WebElement> quordleBoxContents = this.driver.findElements(By.className("quordle-box-content"));
+        List<WebElement> quordleBoxContents = Main.driver.findElements(By.className("quordle-box-content"));
         ArrayList<String> charsNotCounted = new ArrayList<>(IntStream.range(Character.codePointAt("A", 0), Character.codePointAt("Z", 0) + 1).mapToObj(n -> new String(String.valueOf((char) n))).toList());
         System.out.println(charsNotCounted);
         for(WebElement el : quordleBoxContents) {
@@ -40,6 +41,7 @@ public class Keyboard {
             return false;
         }
         WebElement elementToPush = this.letterElements.get(key.toUpperCase());
+        System.out.println("Typing " + key.toUpperCase());
         elementToPush.click();
         try {
             Thread.sleep(300);
@@ -57,6 +59,11 @@ public class Keyboard {
         for(String key : word.split("")) {
             if(!this.enterKey(key)) return false;
         }
+        this.pressEnter();
         return true;
+    }
+
+    public void pressEnter() {
+        this.enterKey.click();
     }
 }
