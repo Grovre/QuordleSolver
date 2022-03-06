@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Board {
 
@@ -18,7 +19,7 @@ public class Board {
         this.xpath = xpath;
         this.element = boardElement;
         this.rows = Row.generateRowsFromBoard(this);
-        this.generateScore();
+        this.score = this.generateScore();
     }
 
     public void refreshBoard() {
@@ -38,7 +39,7 @@ public class Board {
         return letterColorMap;
     }
 
-    public void generateScore() {
+    public int generateScore() {
         this.score = 0;
         for(Color c : this.letterColorFrequency().values()) {
             if(c == Color.YELLOW) {
@@ -47,6 +48,7 @@ public class Board {
                 this.score += 2;
             }
         }
+        return this.score;
     }
 
     public static ArrayList<Board> getAllBoards() {
@@ -76,5 +78,19 @@ public class Board {
 
     public WebElement getElement() {
         return this.element;
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public ArrayList<String> getUnavailableLetters() {
+        ArrayList<String> unavailableLetters = new ArrayList<>();
+        for(Row row : this.rows) {
+            for(Map.Entry<String, Color> letter : row.getRowLettersAndColors().entrySet()) {
+                if(letter.getValue() == Color.GRAY && letter.getKey().length() != 0) unavailableLetters.add(letter.getKey().toUpperCase());
+            }
+        }
+        return unavailableLetters;
     }
 }

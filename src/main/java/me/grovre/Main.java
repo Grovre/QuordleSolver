@@ -2,7 +2,6 @@ package me.grovre;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import me.grovre.board.Board;
-import me.grovre.board.Cell;
 import me.grovre.board.Row;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -39,12 +38,11 @@ public class Main {
         kb.enterWord("Crane");
 
         ArrayList<Board> boards = Board.getAllBoards();
-        for(Board board : boards) {
-            for(Row row : board.getRows()) {
-                for(Cell cell : row.getCells()) {
-                    if(cell.getLetter().length() == 0) continue;
-                    System.out.printf("Letter: %s, Color: %s%n", cell.getLetter(), cell.getColor().toString());
-                }
+        for (int i = 0; i < boards.size(); i++) {
+            Board board = boards.get(i);
+            System.out.println("Board " + (i+1));
+            for (Row row : board.getRows()) {
+                System.out.println(row.getWord());
             }
         }
     }
