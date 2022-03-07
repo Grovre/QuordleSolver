@@ -36,9 +36,8 @@ public class Main {
 
         GuessAnalyzer ga = new GuessAnalyzer();
         for(int i = 0; i < 8; i++) {
-            for(Board board : Board.allBoards) {
-                Board.refreshBoard(board);
-            }
+            Board.refreshBoard(ga.getBoard());
+            if(ga.getBoard().isComplete()) ga.determineBestBoard();
             String bestGuess = ga.determineBestWord();
             kb.enterWord(bestGuess);
             try {

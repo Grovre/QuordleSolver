@@ -13,13 +13,22 @@ public class Row {
     private final ArrayList<Cell> cells;
     private final Board parentBoard;
     private final String xpath;
-    private final String word;
+    private final String correctWordParts;
+    private final String fullGuess;
 
     public Row(Board parentBoard, String xpath) {
         this.parentBoard = parentBoard;
         this.xpath = xpath;
         this.cells = Cell.generateCellsFromRow(this);
-        this.word = this.getRowLettersAsFormattedString();
+        this.correctWordParts = this.getRowLettersAsFormattedString();
+
+        StringBuilder s = new StringBuilder();
+        for(String letter : this.getRowLetters()) s.append(letter);
+        this.fullGuess = s.toString();
+    }
+
+    public String getFullGuess() {
+        return this.fullGuess;
     }
 
     public static ArrayList<Row> generateRowsFromBoard(Board board) {
@@ -36,6 +45,14 @@ public class Row {
         }
 
         return rows;
+    }
+
+    public ArrayList<String> getRowLetters() {
+        ArrayList<String> letters = new ArrayList<>(5);
+        for(Cell cell : this.cells) {
+            letters.add(cell.getLetter());
+        }
+        return letters;
     }
 
     public LinkedHashMap<String, Color> getRowLettersAndColors() {
@@ -71,7 +88,7 @@ public class Row {
         return this.xpath;
     }
 
-    public String getWord() {
-        return this.word;
+    public String getCorrectWordParts() {
+        return this.correctWordParts;
     }
 }

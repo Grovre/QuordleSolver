@@ -16,34 +16,89 @@ public class Board {
     private final WebElement element;
     private int score;
     private boolean isComplete;
+    private String constructedGreenGuess;
 
     public Board(WebElement boardElement, String xpath) {
         this.xpath = xpath;
         this.element = boardElement;
         this.rows = Row.generateRowsFromBoard(this);
         this.score = this.generateScore();
-        this.isComplete = this.checkIfBoardComplete();
+        this.isComplete = false;
+    }
+
+    public String getMostKnowledgableGuess() {
+        ArrayList<String> allGuesses = this.getAllPartialGuesses();
+        char[] knowledgableGuess = {'_', '_', '_', '_', '_'};
+        for(String guess : allGuesses) {
+            char[] splitGuess = guess.toCharArray();
+
+            for (int i = 0; i < splitGuess.length; i++) {
+                char letter = splitGuess[i];
+                if (Character.isUpperCase(letter)) {
+                    knowledgableGuess[i] = letter;
+                }
+            }
+        }
+
+        this.constructedGreenGuess = new String(knowledgableGuess);
+        return this.constructedGreenGuess;
+    }
+
+    public ArrayList<String> getAllFullGuesses() {
+        ArrayList<String> allGuesses = new ArrayList<>();
+        for(Row row : this.rows) {
+            if(row.getFullGuess().length() == 5) {
+                allGuesses.add(row.getFullGuess());
+            }
+        }
+        return allGuesses;
+    }
+
+    public ArrayList<String> getAllPartialGuesses() {
+        ArrayList<String> allGuesses = new ArrayList<>();
+        for(Row row : this.rows) {
+            if(row.getCorrectWordParts().length() != 5) continue;
+            allGuesses.add(row.getCorrectWordParts());
+        }
+
+        return allGuesses;
     }
 
     public boolean isComplete() {
         return this.isComplete;
     }
 
-    public boolean checkIfBoardComplete() {
+    public void checkIfBoardComplete() {
         for(Row row : this.rows) {
-            for(char letter : row.getWord().toCharArray()) {
-                if(!Character.isUpperCase(letter)) {
-                    this.isComplete = false;
-                    return false;
+            StringBuilder s = new StringBuilder();
+            for(Cell cell : row.getCells()) {
+                if(cell.getColor() == Color.GRAY) {
+                    s.append("_");
+                } else if(cell.getColor() == Color.YELLOW) {
+                    s.append(cell.getLetter().toLowerCase());
+                } else {
+                    s.append(cell.getLetter().toUpperCase());
                 }
             }
+
+            boolean flag = false;
+            for(char letter : s.toString().toCharArray()) {
+                if(!Character.isUpperCase(letter)) {
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag) continue;
+            this.isComplete = true;
+            return;
         }
-        this.isComplete = true;
-        return true;
+        this.isComplete = false;
     }
 
     public static void refreshBoard(Board board) {
         board.rows = Row.generateRowsFromBoard(board);
+        board.constructedGreenGuess = board.getMostKnowledgableGuess();
+        board.checkIfBoardComplete();
     }
 
     public ArrayList<Cell> getAllCellsOnBoard() {
@@ -116,13 +171,17 @@ public class Board {
                 if(letter.getValue() == Color.GRAY && letter.getKey().length() != 0) unavailableLetters.add(letter.getKey().toUpperCase());
             }
         }
+        for(Row row : this.rows) {
+            unavailableLetters.removeIf(letter -> row.getRowLettersAsFormattedString().toLowerCase().contains(letter.toLowerCase()));
+        }
+
         return unavailableLetters;
     }
 
     public ArrayList<String> getYellowLetters() {
         ArrayList<String> yellowLetters = new ArrayList<>();
         for(Row row : this.rows) {
-            char[] rowWordAsCharArray = row.getWord().toCharArray();
+            char[] rowWordAsCharArray = row.getCorrectWordParts().toCharArray();
             for(char c : rowWordAsCharArray) {
                 if(Character.isLowerCase(c)) {
                     yellowLetters.add(Character.toString(c));
