@@ -11,20 +11,39 @@ import java.util.Map;
 public class Board {
 
     public static ArrayList<Board> allBoards = new ArrayList<>(4);
-    private final ArrayList<Row> rows;
+    private ArrayList<Row> rows;
     private final String xpath;
     private final WebElement element;
     private int score;
+    private boolean isComplete;
 
     public Board(WebElement boardElement, String xpath) {
         this.xpath = xpath;
         this.element = boardElement;
         this.rows = Row.generateRowsFromBoard(this);
         this.score = this.generateScore();
+        this.isComplete = this.checkIfBoardComplete();
     }
 
-    public static void refreshBoards() {
-        allBoards = getAllBoards();
+    public boolean isComplete() {
+        return this.isComplete;
+    }
+
+    public boolean checkIfBoardComplete() {
+        for(Row row : this.rows) {
+            for(char letter : row.getWord().toCharArray()) {
+                if(!Character.isUpperCase(letter)) {
+                    this.isComplete = false;
+                    return false;
+                }
+            }
+        }
+        this.isComplete = true;
+        return true;
+    }
+
+    public static void refreshBoard(Board board) {
+        board.rows = Row.generateRowsFromBoard(board);
     }
 
     public ArrayList<Cell> getAllCellsOnBoard() {

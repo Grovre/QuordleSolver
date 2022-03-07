@@ -26,6 +26,7 @@ public class GuessAnalyzer {
     }
 
     public Board determineBestBoard() {
+        if(this.board != null && !this.board.isComplete()) return this.board;
         Board bestBoard = this.boardScores.keySet().stream().findAny().orElseThrow();
         for(Board board : this.boardScores.keySet()) {
             if(bestBoard.getScore() < board.getScore()) {
@@ -40,7 +41,9 @@ public class GuessAnalyzer {
     public String determineBestWord() {
         LinkedList<String> possibleWords = new FileUtil(new File("C:\\Users\\lando\\IdeaProjects\\QuordleSolver\\src\\main\\resources\\words.txt")).readFileLines();
         this.removeWordsWithChar(possibleWords, this.board.getUnavailableLetters().toArray(String[]::new));
+        System.out.println("Possible words without excluded chars: " + possibleWords);
         this.removeWordsWithoutMatchedGreenLetters(possibleWords, this.board);
+        System.out.println("Possible words with green letters: " + possibleWords);
         this.removeWordsWithoutYellowChars(possibleWords, this.board);
         System.out.println("Possible words in best board: " + possibleWords);
         return possibleWords.getFirst();
@@ -50,11 +53,11 @@ public class GuessAnalyzer {
         ArrayList<String> yellowChars = board.getYellowLetters();
         for(int i = 0; i < words.size(); i++) {
             String word = words.get(i).toLowerCase();
+            System.out.println(word + ", " + i);
             for(String yellowChar : yellowChars) {
                 if(!word.contains(yellowChar.toLowerCase())) {
                     words.remove(word);
                     i--;
-                    if(i < 0) i = 0;
                 }
             }
         }
@@ -68,6 +71,7 @@ public class GuessAnalyzer {
         }
 
         for(int i = 0; i < words.size(); i++) {
+            if(i < 0) i = 0;
             String word = words.get(i);
             for(String guess : allGuesses) {
                 char[] wordChars = word.toCharArray();
@@ -77,7 +81,7 @@ public class GuessAnalyzer {
                     if(Character.toUpperCase(wordChars[j]) != guessChars[j]) {
                         words.remove(word);
                         i--;
-                        if(i < 0) i = 0;
+                        break;
                     }
                 }
             }
@@ -87,12 +91,12 @@ public class GuessAnalyzer {
     public void removeWordsWithChar(LinkedList<String> words, String... unavailableChars) {
         for(int i = 0; i < words.size(); i++) {
             String word = words.get(i).toLowerCase();
+            System.out.println(word + ", " + i);
             for(String s : unavailableChars) {
                 char c = s.toLowerCase().charAt(0);
                 if(word.contains(Character.toString(c).toLowerCase())) {
                     words.remove(i);
                     i--;
-                    if(i < 0) i = 0;
                     break;
                 }
             }

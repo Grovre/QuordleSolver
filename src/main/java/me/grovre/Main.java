@@ -32,9 +32,13 @@ public class Main {
 
         kb.enterWord("Audio");
 
+        Board.allBoards = Board.getAllBoards();
+
+        GuessAnalyzer ga = new GuessAnalyzer();
         for(int i = 0; i < 8; i++) {
-            Board.refreshBoards();
-            GuessAnalyzer ga = new GuessAnalyzer();
+            for(Board board : Board.allBoards) {
+                Board.refreshBoard(board);
+            }
             String bestGuess = ga.determineBestWord();
             kb.enterWord(bestGuess);
             try {
