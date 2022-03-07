@@ -1,8 +1,12 @@
 package me.grovre;
 
 import me.grovre.board.Board;
+import me.grovre.board.Row;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class GuessAnalyzer {
 
@@ -12,7 +16,7 @@ public class GuessAnalyzer {
     public GuessAnalyzer() {
         this.boardScores = new HashMap<>(4);
 
-        for(Board board : Board.getAllBoards()) {
+        for(Board board : Board.allBoards) {
             int score = board.generateScore();
             this.boardScores.put(board, score);
         }
@@ -34,6 +38,64 @@ public class GuessAnalyzer {
     }
 
     public String determineBestWord() {
-        return null;
+        LinkedList<String> possibleWords = new FileUtil(new File("C:\\Users\\lando\\IdeaProjects\\QuordleSolver\\src\\main\\resources\\words.txt")).readFileLines();
+        this.removeWordsWithChar(possibleWords, this.board.getUnavailableLetters().toArray(String[]::new));
+        this.removeWordsWithoutMatchedGreenLetters(possibleWords, this.board);
+        this.removeWordsWithoutYellowChars(possibleWords, this.board);
+        System.out.println("Possible words in best board: " + possibleWords);
+        return possibleWords.getFirst();
+    }
+
+    public void removeWordsWithoutYellowChars(LinkedList<String> words, Board board) {
+        ArrayList<String> yellowChars = board.getYellowLetters();
+        for(int i = 0; i < words.size(); i++) {
+            String word = words.get(i).toLowerCase();
+            for(String yellowChar : yellowChars) {
+                if(!word.contains(yellowChar.toLowerCase())) {
+                    words.remove(word);
+                    i--;
+                    if(i < 0) i = 0;
+                }
+            }
+        }
+    }
+
+    public void removeWordsWithoutMatchedGreenLetters(LinkedList<String> words, Board board) {
+        ArrayList<String> allGuesses = new ArrayList<>();
+        for(Row row : board.getRows()) {
+            if(row.getWord().length() == 0) continue;
+            allGuesses.add(row.getWord());
+        }
+
+        for(int i = 0; i < words.size(); i++) {
+            String word = words.get(i);
+            for(String guess : allGuesses) {
+                char[] wordChars = word.toCharArray();
+                char[] guessChars = guess.toCharArray();
+                for(int j = 0; j < guessChars.length; j++) {
+                    if(!Character.isUpperCase(guessChars[j])) continue;
+                    if(Character.toUpperCase(wordChars[j]) != guessChars[j]) {
+                        words.remove(word);
+                        i--;
+                        if(i < 0) i = 0;
+                    }
+                }
+            }
+        }
+    }
+    
+    public void removeWordsWithChar(LinkedList<String> words, String... unavailableChars) {
+        for(int i = 0; i < words.size(); i++) {
+            String word = words.get(i).toLowerCase();
+            for(String s : unavailableChars) {
+                char c = s.toLowerCase().charAt(0);
+                if(word.contains(Character.toString(c).toLowerCase())) {
+                    words.remove(i);
+                    i--;
+                    if(i < 0) i = 0;
+                    break;
+                }
+            }
+        }
     }
 }

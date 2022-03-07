@@ -10,7 +10,8 @@ import java.util.Map;
 
 public class Board {
 
-    private ArrayList<Row> rows;
+    public static ArrayList<Board> allBoards = new ArrayList<>(4);
+    private final ArrayList<Row> rows;
     private final String xpath;
     private final WebElement element;
     private int score;
@@ -22,8 +23,8 @@ public class Board {
         this.score = this.generateScore();
     }
 
-    public void refreshBoard() {
-        this.rows = Row.generateRowsFromBoard(this);
+    public static void refreshBoards() {
+        allBoards = getAllBoards();
     }
 
     public ArrayList<Cell> getAllCellsOnBoard() {
@@ -43,20 +44,25 @@ public class Board {
         this.score = 0;
         for(Color c : this.letterColorFrequency().values()) {
             if(c == Color.YELLOW) {
-                this.score += 1;
+                this.score += 3;
             } else if(c == Color.GREEN) {
-                this.score += 2;
+                this.score += 4;
             }
         }
         return this.score;
     }
 
+    // TODO: 3/6/2022 Call this method less 
     public static ArrayList<Board> getAllBoards() {
         HashMap<WebElement, String> boardElements = new HashMap<>(4);
-        boardElements.put(Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div/div[1]/div[1]")), "//*[@id=\"root\"]/div/div[2]/div/div[1]/div[1]");
-        boardElements.put(Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div/div[1]/div[2]")), "//*[@id=\"root\"]/div/div[2]/div/div[1]/div[2]");
-        boardElements.put(Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div/div[2]/div[1]")), "//*[@id=\"root\"]/div/div[2]/div/div[2]/div[1]");
-        boardElements.put(Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div/div[2]/div[2]")), "//*[@id=\"root\"]/div/div[2]/div/div[2]/div[2]");
+        boardElements.put(Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div/div[1]/div[1]")),
+                "//*[@id=\"root\"]/div/div[2]/div/div[1]/div[1]");
+        boardElements.put(Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div/div[1]/div[2]")),
+                "//*[@id=\"root\"]/div/div[2]/div/div[1]/div[2]");
+        boardElements.put(Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div/div[2]/div[1]")),
+                "//*[@id=\"root\"]/div/div[2]/div/div[2]/div[1]");
+        boardElements.put(Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div/div[2]/div[2]")),
+                "//*[@id=\"root\"]/div/div[2]/div/div[2]/div[2]");
 
         ArrayList<Board> boards = new ArrayList<>(boardElements.size());
 
@@ -92,5 +98,19 @@ public class Board {
             }
         }
         return unavailableLetters;
+    }
+
+    public ArrayList<String> getYellowLetters() {
+        ArrayList<String> yellowLetters = new ArrayList<>();
+        for(Row row : this.rows) {
+            char[] rowWordAsCharArray = row.getWord().toCharArray();
+            for(char c : rowWordAsCharArray) {
+                if(Character.isLowerCase(c)) {
+                    yellowLetters.add(Character.toString(c));
+                }
+            }
+        }
+
+        return yellowLetters;
     }
 }

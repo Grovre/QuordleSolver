@@ -19,20 +19,20 @@ public class Row {
         this.parentBoard = parentBoard;
         this.xpath = xpath;
         this.cells = Cell.generateCellsFromRow(this);
-        this.word = this.getRowLettersAsString();
+        this.word = this.getRowLettersAsFormattedString();
     }
 
     public static ArrayList<Row> generateRowsFromBoard(Board board) {
         ArrayList<Row> rows = new ArrayList<>(9);
         List<WebElement> rowElements = Main.driver.findElements(By.xpath(board.getXpath() + "//*[@role=\"row\"]"));
 
+        System.out.println("Reading every cell on the boards...");
         for(int i = 0; i < rowElements.size(); i++) {
             Row r = new Row(
                     board,
                     board.getXpath() + ("//*[@role=\"row\"][%d]".formatted(i+1))
             );
             rows.add(r);
-            System.out.println(r.xpath);
         }
 
         return rows;
@@ -48,7 +48,7 @@ public class Row {
         return wordWithColors;
     }
 
-    public String getRowLettersAsString() {
+    public String getRowLettersAsFormattedString() {
         var map = this.getRowLettersAndColors();
         StringBuilder s = new StringBuilder();
         for(var entry : map.entrySet()) {

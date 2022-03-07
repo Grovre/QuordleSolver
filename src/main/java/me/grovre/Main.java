@@ -2,12 +2,10 @@ package me.grovre;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import me.grovre.board.Board;
-import me.grovre.board.Row;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -33,16 +31,16 @@ public class Main {
         Keyboard kb = new Keyboard();
 
         kb.enterWord("Audio");
-        kb.enterWord("Slate");
-        kb.enterWord("Later");
-        kb.enterWord("Crane");
 
-        ArrayList<Board> boards = Board.getAllBoards();
-        for (int i = 0; i < boards.size(); i++) {
-            Board board = boards.get(i);
-            System.out.println("Board " + (i+1));
-            for (Row row : board.getRows()) {
-                System.out.println(row.getWord());
+        for(int i = 0; i < 8; i++) {
+            Board.refreshBoards();
+            GuessAnalyzer ga = new GuessAnalyzer();
+            String bestGuess = ga.determineBestWord();
+            kb.enterWord(bestGuess);
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }

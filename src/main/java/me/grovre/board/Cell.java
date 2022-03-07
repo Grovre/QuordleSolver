@@ -18,14 +18,15 @@ public class Cell {
     public Cell(Row parentRow, Color color, String xpath) {
         this.parentRow = parentRow;
         this.xpath = xpath;
+        // TODO: 3/6/2022 Fix the getLetterFromCellXpath method, takes 17-19ms to finish and increases wait time by a lot 
         this.letter = this.getLetterFromCellXpath();
         this.color = this.letter.length() == 0 ? Color.GRAY : color;
-        System.out.println(this.color);
     }
 
     public static ArrayList<Cell> generateCellsFromRow(Row row) {
         List<WebElement> cellElements = Main.driver.findElements(By.xpath(row.getXpath() + "//*[@role=\"cell\"]"));
         ArrayList<Cell> cells = new ArrayList<>(cellElements.size());
+
         for (int i = 0; i < cellElements.size(); i++) {
             WebElement el = cellElements.get(i);
             List<String> splitLabel = Arrays.asList(el.getAttribute("aria-label").split(" "));
@@ -36,8 +37,10 @@ public class Cell {
         return cells;
     }
 
+    // FIXME: 3/6/2022 ariaLabel assignment and el retrieval both take around 10ms to complete
     private String getLetterFromCellXpath() {
-        String ariaLabel = Main.driver.findElement(By.xpath(this.getXpath())).getAttribute("aria-label");
+        WebElement el = Main.driver.findElement(By.xpath(this.getXpath()));
+        String ariaLabel = el.getAttribute("aria-label");
         if(ariaLabel.split(" ")[0].equalsIgnoreCase("Blank")) return "";
         return ariaLabel.split("")[1];
     }
