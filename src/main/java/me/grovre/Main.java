@@ -35,16 +35,6 @@ public class Main {
         Board.allBoards = Board.getAllBoards();
 
         GuessAnalyzer ga = new GuessAnalyzer();
-        for(int i = 0; i < 8; i++) {
-            Board.refreshBoard(ga.getBoard());
-            if(ga.getBoard().isComplete()) ga.determineBestBoard();
-            String bestGuess = ga.determineBestWord();
-            kb.enterWord(bestGuess);
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+
     }
 }
