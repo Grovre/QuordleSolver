@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class FileUtil {
 
@@ -14,20 +14,18 @@ public class FileUtil {
         this.f = f;
     }
 
-    public LinkedList<String> readFileLines() {
+    public ArrayList<String> readFileLines() {
         assert this.f != null;
-        LinkedList<String> lines = new LinkedList<>();
+        ArrayList<String> lines = new ArrayList<>();
         try {
             FileReader fr = new FileReader(this.f);
             BufferedReader br = new BufferedReader(fr);
             while(br.ready()) {
                 String line = br.readLine();
-                if(line.length() == 5) lines.addLast(line);
+                if(line.length() == 5) lines.add(line);
             }
-            if(!br.ready()) {
-                br.close();
-                fr.close();
-            }
+            br.close();
+            fr.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

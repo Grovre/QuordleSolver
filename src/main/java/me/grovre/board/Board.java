@@ -95,10 +95,22 @@ public class Board {
         this.isComplete = false;
     }
 
+    public void refreshBoard() {
+        this.rows = Row.generateRowsFromBoard(this);
+        this.constructedGreenGuess = this.getMostKnowledgableGuess();
+        this.checkIfBoardComplete();
+    }
+
     public static void refreshBoard(Board board) {
         board.rows = Row.generateRowsFromBoard(board);
         board.constructedGreenGuess = board.getMostKnowledgableGuess();
         board.checkIfBoardComplete();
+    }
+
+    public static void refreshAllBoards() {
+        for(Board board : allBoards) {
+            refreshBoard(board);
+        }
     }
 
     public ArrayList<Cell> getAllCellsOnBoard() {
@@ -127,7 +139,7 @@ public class Board {
     }
 
     // TODO: 3/6/2022 Call this method less 
-    public static ArrayList<Board> getAllBoards() {
+    public static ArrayList<Board> getNewBoards() {
         HashMap<WebElement, String> boardElements = new HashMap<>(4);
         boardElements.put(Main.driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div/div[1]/div[1]")),
                 "//*[@id=\"root\"]/div/div[2]/div/div[1]/div[1]");

@@ -1,7 +1,6 @@
 package me.grovre;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import me.grovre.board.Board;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
@@ -9,6 +8,8 @@ import java.io.File;
 import java.util.Scanner;
 
 public class Main {
+
+    // TODO: 3/8/2022 Comment on things 
 
     public static ChromeDriver driver;
 
@@ -31,8 +32,6 @@ public class Main {
         Keyboard kb = new Keyboard();
 
         kb.enterWord("Audio");
-
-        Board.allBoards = Board.getAllBoards();
 
         GuessAnalyzer ga = new GuessAnalyzer();
 
