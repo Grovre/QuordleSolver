@@ -1,9 +1,6 @@
 package me.grovre;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class FileUtil {
@@ -17,6 +14,7 @@ public class FileUtil {
     public ArrayList<String> readFileLines() {
         assert this.f != null;
         ArrayList<String> lines = new ArrayList<>();
+
         try {
             FileReader fr = new FileReader(this.f);
             BufferedReader br = new BufferedReader(fr);
@@ -29,6 +27,28 @@ public class FileUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return lines;
+    }
+
+    public void writeMissingElements(ArrayList<String> listBefore, ArrayList<String> listAfter) {
+        if(this.f.getAbsolutePath()
+                .equalsIgnoreCase
+                        ("C:\\Users\\lando\\IdeaProjects\\QuordleSolver\\src\\main\\resources\\words.txt")) {
+            return;
+        }
+        ArrayList<String> missingElements = new ArrayList<>(listBefore);
+        missingElements.removeIf(listAfter::contains);
+
+        try {
+            BufferedWriter fr = new BufferedWriter(new FileWriter(this.f, false));
+            for(String s : missingElements) {
+                fr.write(s);
+                fr.newLine();
+            }
+            fr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

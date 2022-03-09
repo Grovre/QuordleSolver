@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 public class GuessAnalyzer {
 
-    private final Board board;
+    private Board board;
     private final ArrayList<String> possibleAnswers;
 
     public GuessAnalyzer() {
@@ -24,6 +24,10 @@ public class GuessAnalyzer {
         return this.board;
     }
 
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
     public Board determineBestBoard() {
         if(this.board == null) return Board.getNewBoards().get(0);
         if(!this.board.isComplete()) return this.board;
@@ -35,6 +39,22 @@ public class GuessAnalyzer {
 
         System.out.println("Best board: " + bestBoard + "(" + bestBoard.getRows().get(0).getFullGuess() + ")");
         return bestBoard;
+    }
+
+    public String determineBestWord() {
+        if(this.board == null) return null;
+        if(this.board.isComplete()) this.board = this.determineBestBoard();
+
+        ArrayList<String> newPossibleAnswers;
+        newPossibleAnswers = this.removeWordsWithoutGreenChars(this.possibleAnswers, this.board.getMostKnowledgableGuess());
+        // Remove words without yellow
+        // Remove last guess
+
+        new FileUtil(new File("C:\\Users\\lando\\IdeaProjects\\QuordleSolver\\src\\main\\resources\\pre.txt")).writeMissingElements(this.possibleAnswers, newPossibleAnswers);
+
+        // Weight the guess
+
+        return null;
     }
 
     public ArrayList<String> removeWordsWithoutGreenChars(ArrayList<String> words, String formattedWord) {
