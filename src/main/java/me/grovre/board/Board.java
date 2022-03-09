@@ -105,6 +105,7 @@ public class Board {
         board.rows = Row.generateRowsFromBoard(board);
         board.constructedGreenGuess = board.getMostKnowledgableGuess();
         board.checkIfBoardComplete();
+        board.generateScore();
     }
 
     public static void refreshAllBoards() {

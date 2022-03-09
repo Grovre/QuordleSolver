@@ -4,24 +4,17 @@ import me.grovre.board.Board;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 
 public class GuessAnalyzer {
 
-    private final HashMap<Board, Integer> boardScores;
     private final Board board;
     private final ArrayList<String> possibleAnswers;
 
     public GuessAnalyzer() {
-        this.boardScores = new HashMap<>(4);
         this.possibleAnswers = new FileUtil(
                 new File("C:\\Users\\lando\\IdeaProjects\\QuordleSolver\\src\\main\\resources\\words.txt")
         ).readFileLines();
-
-        for(Board board : Board.allBoards) {
-            int score = board.generateScore();
-            this.boardScores.put(board, score);
-        }
 
         this.board = this.determineBestBoard();
         assert this.board != null;
@@ -36,14 +29,11 @@ public class GuessAnalyzer {
         if(!this.board.isComplete()) return this.board;
 
         Board.refreshAllBoards();
-        Board bestBoard = this.board;
-        for(Board board : this.boardScores.keySet()) {
-            if(bestBoard.getScore() < board.getScore()) {
-                bestBoard = board;
-            }
-        }
+        Board bestBoard = Board.allBoards.stream()
+                .max(Comparator.comparingInt(Board::getScore))
+                .orElseThrow();
 
-        System.out.println("Best board: " + bestBoard);
+        System.out.println("Best board: " + bestBoard + "(" + bestBoard.getRows().get(0).getFullGuess() + ")");
         return bestBoard;
     }
 

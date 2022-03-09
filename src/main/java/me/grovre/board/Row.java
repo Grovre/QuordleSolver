@@ -65,6 +65,8 @@ public class Row {
         return wordWithColors;
     }
 
+    @Deprecated
+    // Does not append characters that already exist.
     public String getRowLettersAsFormattedString() {
         var map = this.getRowLettersAndColors();
         StringBuilder s = new StringBuilder();
