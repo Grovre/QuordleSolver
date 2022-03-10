@@ -34,12 +34,11 @@ public class Main {
 
         kb.enterWord("Audio");
 
-        Board.refreshAllBoards();
-        System.out.println(Board.allBoards);
-        for(Board b : Board.allBoards) {
-            for(String guess : b.getAllGuesses()) {
-                System.out.println(guess + " : " + b.generateScore());
-            }
+        GuessAnalyzer ga = new GuessAnalyzer();
+
+        while(!Board.allBoardsComplete()) {
+            ga.determineBestBoard();
+            kb.enterWord(ga.determineBestWord());
         }
     }
 }
