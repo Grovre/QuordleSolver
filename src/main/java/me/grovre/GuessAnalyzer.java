@@ -21,6 +21,12 @@ public class GuessAnalyzer {
         assert this.board != null;
     }
 
+    public void refreshPossibleAnswers() {
+        this.possibleAnswers = new FileUtil(
+                new File("C:\\Users\\lando\\IdeaProjects\\QuordleSolver\\src\\main\\resources\\words.txt")
+        ).readFileLines();
+    }
+
     public Board getBoard() {
         return this.board;
     }
@@ -45,10 +51,12 @@ public class GuessAnalyzer {
 
     public String determineBestWord() {
         if(this.board == null) return null;
-        if(this.board.isComplete()) this.board = this.determineBestBoard();
+        if(this.board.isComplete()) {
+            this.board = this.determineBestBoard();
+            this.refreshPossibleAnswers();
+        }
         this.board.refreshBoard();
 
-        // FIXME: 3/9/2022 One or two of these filter methods aren't working and I'm ripping my hair out now
         ArrayList<String> newPossibleAnswers;
         newPossibleAnswers = this.removeWordsWithoutGreenChars(this.possibleAnswers, this.board.getMostKnowledgableGuess());
         System.out.println(newPossibleAnswers);
@@ -56,8 +64,10 @@ public class GuessAnalyzer {
         System.out.println(newPossibleAnswers);
         newPossibleAnswers = this.removeWordsWithoutYellowLetters(newPossibleAnswers, this.board.getYellowLetters());
         System.out.println(newPossibleAnswers);
-        newPossibleAnswers = this.removeWordsAlreadyGuessed(newPossibleAnswers, this.board.getAllRawGuesses());
-        System.out.println(newPossibleAnswers);
+
+        // FIXME: 3/10/2022 Remove words that have more or less letters than the requried amount
+        // newPossibleAnswers = this.removeWordsAlreadyGuessed(newPossibleAnswers, this.board.getAllRawGuesses());
+        // System.out.println(newPossibleAnswers);
 
         // TODO: 3/9/2022 Weight the guess based on score of letter appearance
 
@@ -95,7 +105,7 @@ public class GuessAnalyzer {
             boolean flag = true;
 
             for(String l : unavLetters) {
-                if(w.contains(l) && l.length() != 0) {
+                if(w.toLowerCase().contains(l.toLowerCase()) && l.length() != 0) {
                     flag = false;
                     break;
                 }
