@@ -129,6 +129,13 @@ public class Board {
         return this.score;
     }
 
+    public static boolean allBoardsComplete() {
+        for(Board b : allBoards) {
+            if(!b.isComplete()) return false;
+        }
+        return true;
+    }
+
     // TODO: 3/6/2022 Call this method less 
     public static ArrayList<Board> getNewBoards() {
         HashMap<WebElement, String> boardElements = new HashMap<>(4);
