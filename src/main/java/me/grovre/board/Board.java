@@ -53,6 +53,16 @@ public class Board {
         return allGuesses;
     }
 
+    public ArrayList<String> getAllRawGuesses() {
+        ArrayList<String> allGuesses = new ArrayList<>();
+        for(Row row : this.rows) {
+            if(row.getRawGuess().length() == 5) {
+                allGuesses.add(row.getRawGuess());
+            }
+        }
+        return allGuesses;
+    }
+
     public boolean isComplete() {
         return this.isComplete;
     }
@@ -178,8 +188,8 @@ public class Board {
         ArrayList<String> unavailableLetters = new ArrayList<>();
         for(Row row : this.rows) {
             for(Cell cell : row.getCells()) {
-                if(cell.getColor() == Color.GRAY) {
-                    unavailableLetters.add(cell.getLetter().toUpperCase());
+                if(cell.getColor() == Color.GRAY && cell.getRawLetter().length() != 0) {
+                    unavailableLetters.add(cell.getRawLetter().toUpperCase());
                 }
             }
         }

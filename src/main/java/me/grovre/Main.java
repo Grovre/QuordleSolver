@@ -38,6 +38,7 @@ public class Main {
 
         while(!Board.allBoardsComplete()) {
             ga.determineBestBoard();
+            System.out.println("Working with board that has " + ga.getBoard().getRows().get(0).getGuess() + " on first row");
             kb.enterWord(ga.determineBestWord());
         }
     }

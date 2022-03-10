@@ -13,6 +13,7 @@ public class Row {
     private final Board parentBoard;
     private final String xpath;
     private final String guess;
+    private final String rawGuess;
 
     public Row(Board parentBoard, String xpath) {
         this.parentBoard = parentBoard;
@@ -20,8 +21,12 @@ public class Row {
         this.cells = Cell.generateCellsFromRow(this);
 
         StringBuilder s = new StringBuilder();
-        for(String letter : this.getRowLetters()) s.append(letter);
+        for(String l : this.getRowLetters()) s.append(l);
         this.guess = s.toString();
+
+        s = new StringBuilder();
+        for(String l : this.getRawRowLetters()) s.append(l);
+        this.rawGuess = s.toString();
     }
 
     public String getGuess() {
@@ -50,6 +55,18 @@ public class Row {
             letters.add(cell.getLetter());
         }
         return letters;
+    }
+
+    public ArrayList<String> getRawRowLetters() {
+        ArrayList<String> letters = new ArrayList<>(5);
+        for(Cell cell : this.cells) {
+            letters.add(cell.getRawLetter());
+        }
+        return letters;
+    }
+
+    public String getRawGuess() {
+        return this.rawGuess;
     }
 
     public ArrayList<Cell> getCells() {

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class GuessAnalyzer {
 
     private Board board;
-    private final ArrayList<String> possibleAnswers;
+    private ArrayList<String> possibleAnswers;
 
     public GuessAnalyzer() {
         this.possibleAnswers = new FileUtil(
@@ -46,7 +46,9 @@ public class GuessAnalyzer {
     public String determineBestWord() {
         if(this.board == null) return null;
         if(this.board.isComplete()) this.board = this.determineBestBoard();
+        this.board.refreshBoard();
 
+        // FIXME: 3/9/2022 One or two of these filter methods aren't working and I'm ripping my hair out now
         ArrayList<String> newPossibleAnswers;
         newPossibleAnswers = this.removeWordsWithoutGreenChars(this.possibleAnswers, this.board.getMostKnowledgableGuess());
         System.out.println(newPossibleAnswers);
@@ -54,46 +56,55 @@ public class GuessAnalyzer {
         System.out.println(newPossibleAnswers);
         newPossibleAnswers = this.removeWordsWithoutYellowLetters(newPossibleAnswers, this.board.getYellowLetters());
         System.out.println(newPossibleAnswers);
-        newPossibleAnswers = this.removeWordsAlreadyGuessed(newPossibleAnswers, this.board.getAllGuesses());
+        newPossibleAnswers = this.removeWordsAlreadyGuessed(newPossibleAnswers, this.board.getAllRawGuesses());
         System.out.println(newPossibleAnswers);
 
         // TODO: 3/9/2022 Weight the guess based on score of letter appearance
 
+        this.possibleAnswers = newPossibleAnswers;
         return newPossibleAnswers.get(0);
     }
 
-    // FIXME: 3/9/2022 Green char check removes all elements
     public ArrayList<String> removeWordsWithoutGreenChars(ArrayList<String> words, String formattedWord) {
         ArrayList<String> passingWords = new ArrayList<>();
-        for(String word : words) {
-            char[] wordChars = word.toUpperCase().toCharArray();
-            char[] formattedWordChars = formattedWord.toCharArray();
 
-            boolean matchFlag = true;
-            for (int j = 0; j < formattedWordChars.length; j++) {
-                char formattedWordChar = formattedWordChars[j];
-                char wordChar = wordChars[j];
+        char[] formattedWordChars = formattedWord.toCharArray();
+        for (String word : words) {
+            boolean flag = true;
+            char[] wordChars = word.toCharArray();
+
+            for (int letterLoc = 0; letterLoc < wordChars.length; letterLoc++) {
+                char formattedWordChar = formattedWordChars[letterLoc];
+                char possibleWordChar = wordChars[letterLoc];
                 if (!Character.isUpperCase(formattedWordChar)) continue;
-                if (wordChar != formattedWordChar) {
-                    matchFlag = false;
+                if (Character.toUpperCase(possibleWordChar) != formattedWordChar) {
+                    flag = false;
                     break;
                 }
             }
 
-            if (matchFlag) passingWords.add(word);
+            if (flag) passingWords.add(word);
         }
 
         return passingWords;
     }
 
     public ArrayList<String> removeWordsWithUnavailableLetters(ArrayList<String> words, ArrayList<String> unavLetters) {
-        return words.stream()
-                .filter(w -> {
+        ArrayList<String> newWords = new ArrayList<>();
+        for(String w : words) {
+            boolean flag = true;
+
             for(String l : unavLetters) {
-                if(w.contains(l)) return false;
+                if(w.contains(l) && l.length() != 0) {
+                    flag = false;
+                    break;
+                }
             }
-            return true;
-        }).collect(Collectors.toCollection(ArrayList<String>::new));
+
+            if(flag) newWords.add(w);
+        }
+
+        return newWords;
     }
 
     public ArrayList<String> removeWordsWithoutYellowLetters(ArrayList<String> words, ArrayList<String> yellowLetters) {

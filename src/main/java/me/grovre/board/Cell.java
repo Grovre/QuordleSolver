@@ -14,16 +14,17 @@ public class Cell {
     private final String letter;
     private final Color color;
     private final String xpath;
+    private final String rawLetter;
 
     public Cell(Row parentRow, Color color, String xpath) {
         this.parentRow = parentRow;
         this.xpath = xpath;
         // TODO: 3/6/2022 Fix the getLetterFromCellXpath method, takes 17-19ms to finish and increases wait time by a lot
-        var temp = this.getLetterFromCellXpath();
-        this.color = temp.length() != 1 ? Color.GRAY : color;
+        this.rawLetter = this.getLetterFromCellXpath();
+        this.color = this.rawLetter.length() != 1 ? Color.GRAY : color;
         this.letter = color == Color.GRAY ? "_" : color == Color.YELLOW ?
-                        this.getLetterFromCellXpath().toLowerCase() :
-                        this.getLetterFromCellXpath().toUpperCase();
+                        this.rawLetter.toLowerCase() :
+                        this.rawLetter.toUpperCase();
     }
 
     public static ArrayList<Cell> generateCellsFromRow(Row row) {
@@ -58,6 +59,10 @@ public class Cell {
 
     public String getLetter() {
         return this.letter;
+    }
+
+    public String getRawLetter() {
+        return this.rawLetter;
     }
 
     public Color getColor() {
