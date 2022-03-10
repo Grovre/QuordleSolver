@@ -5,6 +5,7 @@ import me.grovre.board.Board;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class GuessAnalyzer {
 
@@ -34,6 +35,7 @@ public class GuessAnalyzer {
 
         Board.refreshAllBoards();
         Board bestBoard = Board.allBoards.stream()
+                .filter(b -> !b.isComplete())
                 .max(Comparator.comparingInt(Board::getScore))
                 .orElseThrow();
 
@@ -47,16 +49,20 @@ public class GuessAnalyzer {
 
         ArrayList<String> newPossibleAnswers;
         newPossibleAnswers = this.removeWordsWithoutGreenChars(this.possibleAnswers, this.board.getMostKnowledgableGuess());
-        // Remove words without yellow
-        // Remove last guess
+        System.out.println(newPossibleAnswers);
+        newPossibleAnswers = this.removeWordsWithUnavailableLetters(newPossibleAnswers, this.board.getUnavailableLetters());
+        System.out.println(newPossibleAnswers);
+        newPossibleAnswers = this.removeWordsWithoutYellowLetters(newPossibleAnswers, this.board.getYellowLetters());
+        System.out.println(newPossibleAnswers);
+        newPossibleAnswers = this.removeWordsAlreadyGuessed(newPossibleAnswers, this.board.getAllGuesses());
+        System.out.println(newPossibleAnswers);
 
-        new FileUtil(new File("C:\\Users\\lando\\IdeaProjects\\QuordleSolver\\src\\main\\resources\\pre.txt")).writeMissingElements(this.possibleAnswers, newPossibleAnswers);
+        // TODO: 3/9/2022 Weight the guess based on score of letter appearance
 
-        // Weight the guess
-
-        return null;
+        return newPossibleAnswers.get(0);
     }
 
+    // FIXME: 3/9/2022 Green char check removes all elements
     public ArrayList<String> removeWordsWithoutGreenChars(ArrayList<String> words, String formattedWord) {
         ArrayList<String> passingWords = new ArrayList<>();
         for(String word : words) {
@@ -80,7 +86,31 @@ public class GuessAnalyzer {
         return passingWords;
     }
 
-    public ArrayList<String> removeWordswithoutGreenChars(ArrayList<String> words, Board board) {
-        return this.removeWordsWithoutGreenChars(this.possibleAnswers, board.getMostKnowledgableGuess());
+    public ArrayList<String> removeWordsWithUnavailableLetters(ArrayList<String> words, ArrayList<String> unavLetters) {
+        return words.stream()
+                .filter(w -> {
+            for(String l : unavLetters) {
+                if(w.contains(l)) return false;
+            }
+            return true;
+        }).collect(Collectors.toCollection(ArrayList<String>::new));
+    }
+
+    public ArrayList<String> removeWordsWithoutYellowLetters(ArrayList<String> words, ArrayList<String> yellowLetters) {
+        return words.stream()
+                .filter(w -> {
+                    for(String l : yellowLetters) {
+                        if(!w.contains(l)) return false;
+                    }
+                    return true;
+                }).collect(Collectors.toCollection(ArrayList<String>::new));
+    }
+
+    public ArrayList<String> removeWordsAlreadyGuessed(ArrayList<String> words, ArrayList<String> alreadyGuessedWords) {
+        ArrayList<String> newWords = new ArrayList<>();
+        for(String w : words) {
+            if(!alreadyGuessedWords.contains(w)) newWords.add(w);
+        }
+        return newWords;
     }
 }
