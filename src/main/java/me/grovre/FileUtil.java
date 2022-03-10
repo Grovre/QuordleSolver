@@ -37,6 +37,11 @@ public class FileUtil {
                         ("C:\\Users\\lando\\IdeaProjects\\QuordleSolver\\src\\main\\resources\\words.txt")) {
             return;
         }
+        try {
+            if(this.f.createNewFile()) System.out.println("Created new file");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ArrayList<String> missingElements = new ArrayList<>(listBefore);
         missingElements.removeIf(listAfter::contains);
 
