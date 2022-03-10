@@ -1,6 +1,7 @@
 package me.grovre;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import me.grovre.board.Board;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
@@ -33,7 +34,12 @@ public class Main {
 
         kb.enterWord("Audio");
 
-        GuessAnalyzer ga = new GuessAnalyzer();
-
+        Board.refreshAllBoards();
+        System.out.println(Board.allBoards);
+        for(Board b : Board.allBoards) {
+            for(String guess : b.getAllGuesses()) {
+                System.out.println(guess + " : " + b.generateScore());
+            }
+        }
     }
 }

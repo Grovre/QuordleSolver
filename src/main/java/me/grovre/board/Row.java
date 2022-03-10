@@ -5,7 +5,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Row {
@@ -13,22 +12,20 @@ public class Row {
     private final ArrayList<Cell> cells;
     private final Board parentBoard;
     private final String xpath;
-    private final String correctWordParts;
-    private final String fullGuess;
+    private final String guess;
 
     public Row(Board parentBoard, String xpath) {
         this.parentBoard = parentBoard;
         this.xpath = xpath;
         this.cells = Cell.generateCellsFromRow(this);
-        this.correctWordParts = this.getRowLettersAsFormattedString();
 
         StringBuilder s = new StringBuilder();
         for(String letter : this.getRowLetters()) s.append(letter);
-        this.fullGuess = s.toString();
+        this.guess = s.toString();
     }
 
-    public String getFullGuess() {
-        return this.fullGuess;
+    public String getGuess() {
+        return this.guess;
     }
 
     public static ArrayList<Row> generateRowsFromBoard(Board board) {
@@ -55,30 +52,6 @@ public class Row {
         return letters;
     }
 
-    // TODO: 3/9/2022 Remove this method 
-    public LinkedHashMap<String, Color> getRowLettersAndColors() {
-        LinkedHashMap<String, Color> wordWithColors = new LinkedHashMap<>(5);
-        for(Cell cell : this.cells) {
-            wordWithColors.put(
-                    cell.getLetter().toUpperCase(), cell.getColor()
-            );
-        }
-        return wordWithColors;
-    }
-
-    @Deprecated
-    // Does not append characters that already exist.
-    public String getRowLettersAsFormattedString() {
-        var map = this.getRowLettersAndColors();
-        StringBuilder s = new StringBuilder();
-        for(var entry : map.entrySet()) {
-            String letter = entry.getKey();
-            letter = entry.getValue() == Color.GRAY ? "_" : entry.getValue() == Color.YELLOW ? letter.toLowerCase() : letter.toUpperCase();
-            s.append(letter);
-        }
-        return s.toString();
-    }
-
     public ArrayList<Cell> getCells() {
         return this.cells;
     }
@@ -89,9 +62,5 @@ public class Row {
 
     public String getXpath() {
         return this.xpath;
-    }
-
-    public String getCorrectWordParts() {
-        return this.correctWordParts;
     }
 }

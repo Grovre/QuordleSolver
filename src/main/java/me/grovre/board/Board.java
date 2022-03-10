@@ -6,7 +6,6 @@ import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Board {
 
@@ -27,7 +26,7 @@ public class Board {
     }
 
     public String getMostKnowledgableGuess() {
-        ArrayList<String> allGuesses = this.getAllPartialGuesses();
+        ArrayList<String> allGuesses = this.getAllGuesses();
         char[] knowledgableGuess = {'_', '_', '_', '_', '_'};
         for(String guess : allGuesses) {
             char[] splitGuess = guess.toCharArray();
@@ -44,23 +43,13 @@ public class Board {
         return this.constructedGreenGuess;
     }
 
-    public ArrayList<String> getAllFullGuesses() {
+    public ArrayList<String> getAllGuesses() {
         ArrayList<String> allGuesses = new ArrayList<>();
         for(Row row : this.rows) {
-            if(row.getFullGuess().length() == 5) {
-                allGuesses.add(row.getFullGuess());
+            if(row.getGuess().length() == 5) {
+                allGuesses.add(row.getGuess());
             }
         }
-        return allGuesses;
-    }
-
-    public ArrayList<String> getAllPartialGuesses() {
-        ArrayList<String> allGuesses = new ArrayList<>();
-        for(Row row : this.rows) {
-            if(row.getCorrectWordParts().length() != 5) continue;
-            allGuesses.add(row.getCorrectWordParts());
-        }
-
         return allGuesses;
     }
 
@@ -109,6 +98,10 @@ public class Board {
     }
 
     public static void refreshAllBoards() {
+        if(Board.allBoards.size() < 4) {
+            Board.getNewBoards();
+            return;
+        }
         for(Board board : allBoards) {
             refreshBoard(board);
         }
@@ -120,22 +113,18 @@ public class Board {
         return cells;
     }
 
-    // TODO: 3/9/2022 Remove this method 
-    public HashMap<String, Color> letterColorFrequency() {
-        ArrayList<Cell> cells = this.getAllCellsOnBoard();
-        HashMap<String, Color> letterColorMap = new HashMap<>(cells.size());
-        for(Cell cell : cells) letterColorMap.put(cell.getLetter(), cell.getColor());
-        return letterColorMap;
-    }
-
     public int generateScore() {
         this.score = 0;
-        for(Color c : this.letterColorFrequency().values()) {
-            if(c == Color.YELLOW) {
-                this.score += 3;
-            } else if(c == Color.GREEN) {
-                this.score += 4;
+        for(Row row : this.rows) {
+            for(Cell cell : row.getCells()) {
+                Color color = cell.getColor();
+                if(color == Color.YELLOW) {
+                    this.score += 3;
+                } else if(color == Color.GREEN) {
+                    this.score += 4;
+                }
             }
+
         }
         return this.score;
     }
@@ -158,7 +147,7 @@ public class Board {
             Board b = new Board(k, boardElements.get(k));
             boards.add(b);
         }
-
+        allBoards = boards;
         return boards;
     }
 
@@ -181,12 +170,11 @@ public class Board {
     public ArrayList<String> getUnavailableLetters() {
         ArrayList<String> unavailableLetters = new ArrayList<>();
         for(Row row : this.rows) {
-            for(Map.Entry<String, Color> letter : row.getRowLettersAndColors().entrySet()) {
-                if(letter.getValue() == Color.GRAY && letter.getKey().length() != 0) unavailableLetters.add(letter.getKey().toUpperCase());
+            for(Cell cell : row.getCells()) {
+                if(cell.getColor() == Color.GRAY) {
+                    unavailableLetters.add(cell.getLetter().toUpperCase());
+                }
             }
-        }
-        for(Row row : this.rows) {
-            unavailableLetters.removeIf(letter -> row.getRowLettersAsFormattedString().toLowerCase().contains(letter.toLowerCase()));
         }
 
         return unavailableLetters;
@@ -195,7 +183,7 @@ public class Board {
     public ArrayList<String> getYellowLetters() {
         ArrayList<String> yellowLetters = new ArrayList<>();
         for(Row row : this.rows) {
-            char[] rowWordAsCharArray = row.getCorrectWordParts().toCharArray();
+            char[] rowWordAsCharArray = row.getGuess().toCharArray();
             for(char c : rowWordAsCharArray) {
                 if(Character.isLowerCase(c)) {
                     yellowLetters.add(Character.toString(c));

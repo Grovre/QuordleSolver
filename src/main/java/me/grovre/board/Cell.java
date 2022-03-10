@@ -18,9 +18,12 @@ public class Cell {
     public Cell(Row parentRow, Color color, String xpath) {
         this.parentRow = parentRow;
         this.xpath = xpath;
-        // TODO: 3/6/2022 Fix the getLetterFromCellXpath method, takes 17-19ms to finish and increases wait time by a lot 
-        this.letter = this.getLetterFromCellXpath();
-        this.color = this.letter.length() == 0 ? Color.GRAY : color;
+        // TODO: 3/6/2022 Fix the getLetterFromCellXpath method, takes 17-19ms to finish and increases wait time by a lot
+        var temp = this.getLetterFromCellXpath();
+        this.color = temp.length() != 1 ? Color.GRAY : color;
+        this.letter = color == Color.GRAY ? "_" : color == Color.YELLOW ?
+                        this.getLetterFromCellXpath().toLowerCase() :
+                        this.getLetterFromCellXpath().toUpperCase();
     }
 
     public static ArrayList<Cell> generateCellsFromRow(Row row) {

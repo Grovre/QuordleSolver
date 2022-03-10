@@ -37,7 +37,7 @@ public class GuessAnalyzer {
                 .max(Comparator.comparingInt(Board::getScore))
                 .orElseThrow();
 
-        System.out.println("Best board: " + bestBoard + "(" + bestBoard.getRows().get(0).getFullGuess() + ")");
+        System.out.println("Best board: " + bestBoard + "(" + bestBoard.getRows().get(0).getGuess() + ")");
         return bestBoard;
     }
 
