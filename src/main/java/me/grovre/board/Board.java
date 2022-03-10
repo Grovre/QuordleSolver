@@ -120,6 +120,7 @@ public class Board {
         return cells;
     }
 
+    // TODO: 3/9/2022 Remove this method 
     public HashMap<String, Color> letterColorFrequency() {
         ArrayList<Cell> cells = this.getAllCellsOnBoard();
         HashMap<String, Color> letterColorMap = new HashMap<>(cells.size());

@@ -55,6 +55,7 @@ public class Row {
         return letters;
     }
 
+    // TODO: 3/9/2022 Remove this method 
     public LinkedHashMap<String, Color> getRowLettersAndColors() {
         LinkedHashMap<String, Color> wordWithColors = new LinkedHashMap<>(5);
         for(Cell cell : this.cells) {
