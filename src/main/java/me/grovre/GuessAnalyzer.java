@@ -65,7 +65,7 @@ public class GuessAnalyzer {
         newPossibleAnswers = this.removeWordsWithoutYellowLetters(newPossibleAnswers, this.board.getYellowLetters());
         System.out.println(newPossibleAnswers);
 
-        // FIXME: 3/10/2022 Remove words that have more or less letters than the requried amount
+        // FIXME: 3/10/2022 Remove words that have more or less letters than the required amount
         // newPossibleAnswers = this.removeWordsAlreadyGuessed(newPossibleAnswers, this.board.getAllRawGuesses());
         // System.out.println(newPossibleAnswers);
 
